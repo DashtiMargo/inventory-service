@@ -2,10 +2,6 @@ package com.inventory.inventory_service.controller;
 
 import com.inventory.inventory_service.dto.ItemRequest;
 import com.inventory.inventory_service.dto.ItemResponse;
-import com.inventory.inventory_service.entity.ItemCatalog;
-import com.inventory.inventory_service.exception.ItemAlreadyExistsException;
-import com.inventory.inventory_service.exception.ItemNotFoundException;
-import com.inventory.inventory_service.mapper.ItemMapper;
 import com.inventory.inventory_service.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,55 +17,41 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("items")//придумать путь
+@RequestMapping("/api/v1/items")
 @RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
-    private final ItemMapper itemMapper;
 
     @PostMapping("/save")
     public ResponseEntity<ItemResponse> save(@RequestBody ItemRequest request) {
-        if (itemService.existsByCode(request.getItemCode())) {
-            throw new ItemAlreadyExistsException();
-        }
-        ItemCatalog saved = itemService.save(itemMapper.toEntity(request));
-        return ResponseEntity.ok(itemMapper.toResponse(saved));
+        return ResponseEntity.ok(itemService.save(request));
     }
 
     @GetMapping("/find/{id}")
     public ResponseEntity<ItemResponse> find(@PathVariable Long id) {
-        ItemCatalog item = itemService.find(id)
-                .orElseThrow(ItemNotFoundException::new);
-        return ResponseEntity.ok(itemMapper.toResponse(item));
+        return ResponseEntity.ok(itemService.find(id));
     }
 
     @GetMapping("/find-by-code/{itemCode}")
     public ResponseEntity<ItemResponse> findByCode(@PathVariable String itemCode) {
-        ItemCatalog item = itemService.findByCode(itemCode)
-                .orElseThrow(ItemNotFoundException::new);
-        return ResponseEntity.ok(itemMapper.toResponse(item));
+        return ResponseEntity.ok(itemService.findByCode(itemCode));
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<ItemResponse>> findAll() {
-        List<ItemResponse> responses = itemService.findAll().stream()
-                .map(itemMapper::toResponse)
-                .toList();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(itemService.findAll());
     }
 
     @PutMapping("/merge/{id}")
     public ResponseEntity<ItemResponse> merge(@PathVariable Long id,
                                               @RequestBody ItemRequest request) {
-        ItemCatalog merged = itemService.merge(id, itemMapper.toEntity(request))
-                .orElseThrow(ItemNotFoundException::new);
-        return ResponseEntity.ok(itemMapper.toResponse(merged));
+        return ResponseEntity.ok(itemService.merge(id, request));
     }
 
     @DeleteMapping("/remove/{id}")
-    public ResponseEntity<Object> remove(@PathVariable Long id) {
-        itemService.remove(id).orElseThrow(ItemNotFoundException::new);
+    public ResponseEntity<Void> remove(@PathVariable Long id) {
+        itemService.remove(id);
         return ResponseEntity.noContent().build();
     }
 }

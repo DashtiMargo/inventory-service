@@ -17,4 +17,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public void handleAlreadyExists() {
     }
+
+    @ExceptionHandler(StockNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleStockNotFound() {
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleBadRequest() {
+    }
 }

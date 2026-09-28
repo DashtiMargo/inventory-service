@@ -1,60 +1,68 @@
 package com.inventory.inventory_service.service;
 
+import com.inventory.inventory_service.dto.ItemRequest;
+import com.inventory.inventory_service.dto.ItemResponse;
 import com.inventory.inventory_service.entity.ItemCatalog;
+import com.inventory.inventory_service.exception.ItemAlreadyExistsException;
+import com.inventory.inventory_service.exception.ItemNotFoundException;
+import com.inventory.inventory_service.mapper.ItemMapper;
 import com.inventory.inventory_service.repository.ItemCatalogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ItemService {
 
     private final ItemCatalogRepository itemCatalogRepository;
+    private final ItemMapper itemMapper;
 
     @Transactional
-    public ItemCatalog save(ItemCatalog item) {
-        return itemCatalogRepository.save(item);
+    public ItemResponse save(ItemRequest request) {
+        if (itemCatalogRepository.existsByItemCode(request.getItemCode())) {
+            throw new ItemAlreadyExistsException();
+        }
+        ItemCatalog saved = itemCatalogRepository.save(itemMapper.toEntity(request));
+        return itemMapper.toResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    public Optional<ItemCatalog> find(Long id) {
-        return itemCatalogRepository.findById(id);
+    public ItemResponse find(Long id) {
+        ItemCatalog item = itemCatalogRepository.findById(id)
+                .orElseThrow(ItemNotFoundException::new);
+        return itemMapper.toResponse(item);
     }
 
     @Transactional(readOnly = true)
-    public Optional<ItemCatalog> findByCode(String itemCode) {
-        return itemCatalogRepository.findByItemCode(itemCode);
+    public ItemResponse findByCode(String itemCode) {
+        ItemCatalog item = itemCatalogRepository.findByItemCode(itemCode)
+                .orElseThrow(ItemNotFoundException::new);
+        return itemMapper.toResponse(item);
     }
 
     @Transactional(readOnly = true)
-    public List<ItemCatalog> findAll() {
-        return itemCatalogRepository.findAll();
+    public List<ItemResponse> findAll() {
+        return itemCatalogRepository.findAll().stream()
+                .map(itemMapper::toResponse)
+                .toList();
     }
 
     @Transactional
-    public Optional<ItemCatalog> merge(Long id, ItemCatalog item) {
-        return itemCatalogRepository.findById(id).map(existing -> {
-            existing.setItemName(item.getItemName());
-            existing.setCategory(item.getCategory());
-            existing.setUnitOfMeasure(item.getUnitOfMeasure());
-            return itemCatalogRepository.save(existing);
-        });
+    public ItemResponse merge(Long id, ItemRequest request) {
+        ItemCatalog existing = itemCatalogRepository.findById(id)
+                .orElseThrow(ItemNotFoundException::new);
+        itemMapper.updateFromDto(request, existing);
+        ItemCatalog updated = itemCatalogRepository.save(existing);
+        return itemMapper.toResponse(updated);
     }
 
     @Transactional
-    public Optional<Boolean> remove(Long id) {
-        return itemCatalogRepository.findById(id).map(item -> {
-            itemCatalogRepository.delete(item);
-            return true;
-        });
-    }
-
-    @Transactional(readOnly = true)
-    public boolean existsByCode(String itemCode) {
-        return itemCatalogRepository.existsByItemCode(itemCode);
+    public void remove(Long id) {
+        ItemCatalog item = itemCatalogRepository.findById(id)
+                .orElseThrow(ItemNotFoundException::new);
+        itemCatalogRepository.delete(item);
     }
 }
