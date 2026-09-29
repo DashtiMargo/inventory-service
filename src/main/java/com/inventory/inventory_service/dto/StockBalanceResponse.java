@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class StockBalanceResponse {
     private Long id;
-    private String itemCode;
+    private String ProductCode;
     private String warehouseId;
     private Integer quantity;
     private LocalDateTime lastUpdated;

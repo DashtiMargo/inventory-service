@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class StockBalance extends BaseEntity {
 
     @Column
-    private String itemCode;
+    private String productCode;
 
     @Column
     private String warehouseId;

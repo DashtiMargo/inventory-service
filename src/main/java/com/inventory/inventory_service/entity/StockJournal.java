@@ -15,7 +15,7 @@ import lombok.Setter;
 public class StockJournal extends BaseEntity {
 
     @Column
-    private String itemCode;
+    private String productCode;
 
     @Column
     private String warehouseId;

@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemRequest {
-    private String itemCode;
-    private String itemName;
+public class ProductRequest {
+    private String productCode;
+    private String productName;
     private String category;
     private String unitOfMeasure;
 }

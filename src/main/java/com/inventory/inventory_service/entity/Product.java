@@ -9,17 +9,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "item_catalog")
+@Table(name = "product")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemCatalog extends BaseEntity {
+public class Product extends BaseEntity {
     @Column
-    private String itemCode;
+    private String productCode;
 
     @Column
-    private String itemName;
+    private String productName;
 
     @Column
     private String category;

@@ -29,7 +29,7 @@ public class StockService {
     @Transactional
     public StockBalanceResponse increaseStock(StockOperationRequest request) {
         Optional<StockBalance> found = stockBalanceRepository
-                .findByItemCodeAndWarehouseId(request.getItemCode(), request.getWarehouseId());
+                .findByProductCodeAndWarehouseId(request.getProductCode(), request.getWarehouseId());
 
         StockBalance balance;
         if (found.isPresent()) {
@@ -37,7 +37,7 @@ public class StockService {
             balance.setQuantity(balance.getQuantity() + request.getQuantity());
         } else {
             balance = new StockBalance();
-            balance.setItemCode(request.getItemCode());
+            balance.setProductCode(request.getProductCode());
             balance.setWarehouseId(request.getWarehouseId());
             balance.setQuantity(request.getQuantity());
         }
@@ -45,7 +45,7 @@ public class StockService {
         StockBalance saved = stockBalanceRepository.save(balance);
 
         StockJournal journal = new StockJournal();
-        journal.setItemCode(request.getItemCode());
+        journal.setProductCode(request.getProductCode());
         journal.setWarehouseId(request.getWarehouseId());
         journal.setOperationType(OperationType.INCOMING);
         journal.setQuantity(request.getQuantity());
@@ -57,7 +57,7 @@ public class StockService {
     @Transactional
     public StockBalanceResponse decreaseStock(StockOperationRequest request) {
         StockBalance balance = stockBalanceRepository
-                .findByItemCodeAndWarehouseId(request.getItemCode(), request.getWarehouseId())
+                .findByProductCodeAndWarehouseId(request.getProductCode(), request.getWarehouseId())
                 .orElseThrow(StockNotFoundException::new);
 
         if (balance.getQuantity() < request.getQuantity()) {
@@ -68,7 +68,7 @@ public class StockService {
         StockBalance saved = stockBalanceRepository.save(balance);
 
         StockJournal journal = new StockJournal();
-        journal.setItemCode(request.getItemCode());
+        journal.setProductCode(request.getProductCode());
         journal.setWarehouseId(request.getWarehouseId());
         journal.setOperationType(OperationType.OUTGOING);
         journal.setQuantity(request.getQuantity());
@@ -79,7 +79,7 @@ public class StockService {
 
     public StockBalanceResponse getBalance(String itemCode, String warehouseId) {
         StockBalance balance = stockBalanceRepository
-                .findByItemCodeAndWarehouseId(itemCode, warehouseId)
+                .findByProductCodeAndWarehouseId(itemCode, warehouseId)
                 .orElseThrow(StockNotFoundException::new);
         return stockMapper.toBalanceResponse(balance);
     }

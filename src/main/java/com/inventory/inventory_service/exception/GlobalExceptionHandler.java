@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ItemNotFoundException.class)
+    @ExceptionHandler(ProductNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handleNotFound() {
+    public void handleProductNotFound() {
     }
 
-    @ExceptionHandler(ItemAlreadyExistsException.class)
+    @ExceptionHandler(ProductAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public void handleAlreadyExists() {
+    public void handleProductAlreadyExists() {
     }
 
     @ExceptionHandler(StockNotFoundException.class)

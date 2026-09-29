@@ -1,9 +1,9 @@
 package com.inventory.inventory_service.exception;
 
-public class ItemAlreadyExistsException extends RuntimeException {
+public class ProductAlreadyExistsException extends RuntimeException {
     private static final String MESSAGE = "Item already exists";
 
-    public ItemAlreadyExistsException() {
+    public ProductAlreadyExistsException() {
         super(MESSAGE);
     }
 }

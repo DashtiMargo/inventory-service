@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockOperationRequest {
-    private String itemCode;
+    private String ProductCode;
     private String warehouseId;
     private Integer quantity;
 }
