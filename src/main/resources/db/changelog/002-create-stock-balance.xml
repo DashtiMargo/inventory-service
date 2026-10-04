@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="002-create-stock-balance" author="DashtiMargo">
+        <createTable tableName="stock_balance">
+            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true" nullable="false"/></column>
+            <column name="created_at" type="timestamp"/>
+            <column name="product_code" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="warehouse_id" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="quantity" type="integer" defaultValueNumeric="0"><constraints nullable="false"/></column>
+            <column name="last_updated" type="timestamp"/>
+        </createTable>
+        <addUniqueConstraint tableName="stock_balance" columnNames="product_code, warehouse_id" constraintName="uk_stock_balance_product_warehouse"/>
+    </changeSet>
+</databaseChangeLog>

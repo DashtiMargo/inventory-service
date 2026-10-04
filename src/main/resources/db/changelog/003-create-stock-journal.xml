@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="003-create-stock-journal" author="DashtiMargo">
+        <createTable tableName="stock_journal">
+            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true" nullable="false"/></column>
+            <column name="created_at" type="timestamp"/>
+            <column name="product_code" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="warehouse_id" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="operation_type" type="varchar(20)"><constraints nullable="false"/></column>
+            <column name="quantity" type="integer"><constraints nullable="false"/></column>
+            <column name="document_id" type="varchar(100)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
