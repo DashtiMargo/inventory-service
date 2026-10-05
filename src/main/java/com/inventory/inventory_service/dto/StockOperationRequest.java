@@ -11,4 +11,5 @@ public class StockOperationRequest {
     private String productCode;
     private String warehouseId;
     private Integer quantity;
+    private String documentId;
 }

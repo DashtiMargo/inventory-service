@@ -84,8 +84,18 @@ public class StockService {
         return stockMapper.toBalanceResponse(balance);
     }
 
-    public List<StockJournalResponse> getJournal() {
-        return stockJournalRepository.findAll().stream()
+    public List<StockJournalResponse> getJournal(String productCode, String warehouseId) {
+        List<StockJournal> list;
+
+        if (productCode != null && !productCode.isEmpty()) {
+            list = stockJournalRepository.findByProductCode(productCode);
+        } else if (warehouseId != null && !warehouseId.isEmpty()) {
+            list = stockJournalRepository.findByWarehouseId(warehouseId);
+        } else {
+            list = stockJournalRepository.findAll();
+        }
+
+        return list.stream()
                 .map(stockMapper::toJournalResponse)
                 .toList();
     }

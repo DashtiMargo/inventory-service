@@ -8,10 +8,14 @@ import com.inventory.inventory_service.exception.ProductNotFoundException;
 import com.inventory.inventory_service.mapper.ProductMapper;
 import com.inventory.inventory_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.inventory.inventory_service.CacheName.PRODUCTS;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
+    @CacheEvict(value = PRODUCTS, allEntries = true)
     @Transactional
     public ProductResponse save(ProductRequest request) {
         if (productRepository.existsByProductCode(request.getProductCode())) {
@@ -36,6 +41,7 @@ public class ProductService {
         return productMapper.toResponse(product);
     }
 
+    @Cacheable(value = PRODUCTS)
     @Transactional(readOnly = true)
     public ProductResponse findByCode(String productCode) {
         Product product = productRepository.findByProductCode(productCode)
@@ -50,6 +56,7 @@ public class ProductService {
                 .toList();
     }
 
+    @CacheEvict(value = PRODUCTS, allEntries = true)
     @Transactional
     public ProductResponse merge(Long id, ProductRequest request) {
         Product existing = productRepository.findById(id)
@@ -59,6 +66,7 @@ public class ProductService {
         return productMapper.toResponse(updated);
     }
 
+    @CacheEvict(value = PRODUCTS, allEntries = true)
     @Transactional
     public void remove(Long id) {
         Product product = productRepository.findById(id)

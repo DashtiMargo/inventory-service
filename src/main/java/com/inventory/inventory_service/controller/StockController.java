@@ -39,7 +39,9 @@ public class StockController {
     }
 
     @GetMapping("/journal")
-    public ResponseEntity<List<StockJournalResponse>> journal() {
-        return ResponseEntity.ok(stockService.getJournal());
+    public ResponseEntity<List<StockJournalResponse>> journal(
+            @RequestParam(required = false) String productCode,
+            @RequestParam(required = false) String warehouseId) {
+        return ResponseEntity.ok(stockService.getJournal(productCode, warehouseId));
     }
 }
