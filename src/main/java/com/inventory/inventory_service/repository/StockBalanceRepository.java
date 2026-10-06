@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface StockBalanceRepository extends JpaRepository<StockBalance, Long> {
+public interface StockBalanceRepository extends JpaRepository<StockBalance, UUID> {
 
     Optional<StockBalance> findByProductCodeAndWarehouseId(String productCode, String warehouseId);
 }

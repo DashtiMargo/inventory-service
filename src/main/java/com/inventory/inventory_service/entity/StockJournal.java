@@ -14,19 +14,19 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StockJournal extends BaseEntity {
 
-    @Column
+    @Column(name = "product_code")
     private String productCode;
 
-    @Column
+    @Column(name = "warehouse_id")
     private String warehouseId;
 
     @Enumerated(EnumType.STRING)
-    @Column
-    private OperationType  operationType;
+    @Column(name = "operation_type")
+    private OperationType operationType;
 
-    @Column
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column
+    @Column(name = "document_id")
     private String documentId;
 }

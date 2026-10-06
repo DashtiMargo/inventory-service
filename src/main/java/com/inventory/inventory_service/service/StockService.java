@@ -1,17 +1,20 @@
 package com.inventory.inventory_service.service;
 
-import com.inventory.inventory_service.dto.StockBalanceResponse;
-import com.inventory.inventory_service.dto.StockJournalResponse;
-import com.inventory.inventory_service.dto.StockOperationRequest;
+import com.inventory.inventory_service.dto.StockBalanceResponseDto;
+import com.inventory.inventory_service.dto.StockJournalResponseDto;
+import com.inventory.inventory_service.dto.StockOperationRequestDto;
 import com.inventory.inventory_service.entity.OperationType;
 import com.inventory.inventory_service.entity.StockBalance;
 import com.inventory.inventory_service.entity.StockJournal;
 import com.inventory.inventory_service.exception.BadRequestException;
+import com.inventory.inventory_service.exception.NotEnoughStockException;
 import com.inventory.inventory_service.exception.StockNotFoundException;
 import com.inventory.inventory_service.mapper.StockMapper;
 import com.inventory.inventory_service.repository.StockBalanceRepository;
 import com.inventory.inventory_service.repository.StockJournalRepository;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,71 +23,74 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StockService {
 
-    private final StockBalanceRepository stockBalanceRepository;
-    private final StockJournalRepository stockJournalRepository;
-    private final StockMapper stockMapper;
+    StockBalanceRepository stockBalanceRepository;
+    StockJournalRepository stockJournalRepository;
+    StockMapper stockMapper;
 
     @Transactional
-    public StockBalanceResponse increaseStock(StockOperationRequest request) {
+    public StockBalanceResponseDto increaseStock(StockOperationRequestDto request) {
         Optional<StockBalance> found = stockBalanceRepository
-                .findByProductCodeAndWarehouseId(request.getProductCode(), request.getWarehouseId());
+                .findByProductCodeAndWarehouseId(request.productCode(), request.warehouseId());
 
         StockBalance balance;
         if (found.isPresent()) {
             balance = found.get();
-            balance.setQuantity(balance.getQuantity() + request.getQuantity());
+            balance.setQuantity(balance.getQuantity() + request.quantity());
         } else {
             balance = new StockBalance();
-            balance.setProductCode(request.getProductCode());
-            balance.setWarehouseId(request.getWarehouseId());
-            balance.setQuantity(request.getQuantity());
+            balance.setProductCode(request.productCode());
+            balance.setWarehouseId(request.warehouseId());
+            balance.setQuantity(request.quantity());
         }
 
         StockBalance saved = stockBalanceRepository.save(balance);
 
         StockJournal journal = new StockJournal();
-        journal.setProductCode(request.getProductCode());
-        journal.setWarehouseId(request.getWarehouseId());
+        journal.setProductCode(request.productCode());
+        journal.setWarehouseId(request.warehouseId());
         journal.setOperationType(OperationType.INCOMING);
-        journal.setQuantity(request.getQuantity());
+        journal.setQuantity(request.quantity());
+        journal.setDocumentId(request.documentId());
         stockJournalRepository.save(journal);
 
         return stockMapper.toBalanceResponse(saved);
     }
 
     @Transactional
-    public StockBalanceResponse decreaseStock(StockOperationRequest request) {
+    public StockBalanceResponseDto decreaseStock(StockOperationRequestDto request) {
         StockBalance balance = stockBalanceRepository
-                .findByProductCodeAndWarehouseId(request.getProductCode(), request.getWarehouseId())
+                .findByProductCodeAndWarehouseId(request.productCode(), request.warehouseId())
                 .orElseThrow(StockNotFoundException::new);
 
-        if (balance.getQuantity() < request.getQuantity()) {
-            throw new BadRequestException();
+        if (balance.getQuantity() < request.quantity()) {
+            throw new NotEnoughStockException();
         }
 
-        balance.setQuantity(balance.getQuantity() - request.getQuantity());
+        balance.setQuantity(balance.getQuantity() - request.quantity());
         StockBalance saved = stockBalanceRepository.save(balance);
 
         StockJournal journal = new StockJournal();
-        journal.setProductCode(request.getProductCode());
-        journal.setWarehouseId(request.getWarehouseId());
+        journal.setProductCode(request.productCode());
+        journal.setWarehouseId(request.warehouseId());
         journal.setOperationType(OperationType.OUTGOING);
-        journal.setQuantity(request.getQuantity());
+        journal.setQuantity(request.quantity());
+        journal.setDocumentId(request.documentId());
         stockJournalRepository.save(journal);
 
         return stockMapper.toBalanceResponse(saved);
     }
 
-    public StockBalanceResponse getBalance(String itemCode, String warehouseId) {
+    public StockBalanceResponseDto getBalance(String productCode, String warehouseId) {
         StockBalance balance = stockBalanceRepository
-                .findByProductCodeAndWarehouseId(itemCode, warehouseId)
+                .findByProductCodeAndWarehouseId(productCode, warehouseId)
                 .orElseThrow(StockNotFoundException::new);
         return stockMapper.toBalanceResponse(balance);
     }
 
-    public List<StockJournalResponse> getJournal(String productCode, String warehouseId) {
+    public List<StockJournalResponseDto> getJournal(String productCode, String warehouseId) {
         List<StockJournal> list;
 
         if (productCode != null && !productCode.isEmpty()) {

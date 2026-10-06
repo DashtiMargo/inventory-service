@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="001-create-product" author="DashtiMargo">
         <createTable tableName="product">
-            <column name="id" type="bigint" autoIncrement="true"><constraints primaryKey="true" nullable="false"/></column>
+            <column name="id" type="uuid" autoIncrement="true"><constraints primaryKey="true" nullable="false"/></column>
             <column name="created_at" type="timestamp"/>
             <column name="product_code" type="varchar(50)"><constraints unique="true" nullable="false"/></column>
             <column name="product_name" type="varchar(200)"><constraints nullable="false"/></column>

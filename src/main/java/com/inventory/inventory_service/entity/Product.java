@@ -15,15 +15,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product extends BaseEntity {
-    @Column
-    private String productCode;
 
-    @Column
-    private String productName;
+    @Column(name = "product_code")
+    private String itemCode;
+
+    @Column(name = "product_name")
+    private String itemName;
 
     @Column
     private String category;
 
-    @Column
+    @Column(name = "unit_of_measure")
     private String unitOfMeasure;
 }

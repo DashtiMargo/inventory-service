@@ -1,7 +1,7 @@
 package com.inventory.inventory_service.mapper;
 
-import com.inventory.inventory_service.dto.ProductRequest;
-import com.inventory.inventory_service.dto.ProductResponse;
+import com.inventory.inventory_service.dto.ProductRequestDto;
+import com.inventory.inventory_service.dto.ProductResponseDto;
 import com.inventory.inventory_service.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -9,9 +9,9 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
-    ProductResponse toResponse(Product entity);
+    ProductResponseDto toResponse(Product entity);
 
-    Product toEntity(ProductRequest request);
+    Product toEntity(ProductRequestDto request);
 
-    void updateFromDto(ProductRequest request, @MappingTarget Product entity);
+    void updateFromDto(ProductRequestDto request, @MappingTarget Product entity);
 }
